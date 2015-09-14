@@ -1,4 +1,6 @@
 
-gom  "github.com/gin-gonic/contrib/sessions"
-gom  "github.com/gin-gonic/gin"
-gom  "github.com/twinj/uuid"
+gom "github.com/gin-gonic/contrib/sessions"
+gom "github.com/gin-gonic/gin"
+gom "github.com/twinj/uuid"
+gom "gopkg.in/mgo.v2"
+gom "gopkg.in/mgo.v2/bson"
