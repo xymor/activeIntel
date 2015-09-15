@@ -47,6 +47,7 @@ type Visit struct {
         Agent string
         Cookie string
         Referer string
+        Query string
 }
 
 func NewVisit(cookieValue string, r *http.Request) *Visit {
@@ -56,34 +57,27 @@ func NewVisit(cookieValue string, r *http.Request) *Visit {
     v.Referer = r.Referer()
     v.IP = strings.Split(r.RemoteAddr, ":")[0] //remember X-Forwarded-For
     v.Cookie = cookieValue
+    v.Query = r.URL.Query().Encode()
     return v
 }
 
 func saveVisit(visit *Visit) {
+  log.Println("saving visit")
   log.Println(visit)
+  c := session.DB("mongo").C("visits")
+  err := c.Insert(visit)
+  if err != nil {
+          log.Fatal(err)
+  }
 }
 
 func setupMongo() {
-        session, err := mgo.Dial(mongoURI)
+        var err error
+        session, err = mgo.Dial(mongoURI)
         if err != nil {
                 panic(err)
         }
         defer session.Close()
 
         session.SetMode(mgo.Monotonic, true)
-
-        // c := session.DB("test").C("people")
-        // err = c.Insert(&Person{"Ale", "+55 53 8116 9639"},
-        //          &Person{"Cla", "+55 53 8402 8510"})
-        // if err != nil {
-        //         log.Fatal(err)
-        // }
-
-        // result := Person{}
-        // err = c.Find(bson.M{"name": "Ale"}).One(&result)
-        // if err != nil {
-        //         log.Fatal(err)
-        // }
-
-        // fmt.Println("Phone:", result.Phone)
 }
