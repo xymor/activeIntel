@@ -77,7 +77,6 @@ func setupMongo() {
         if err != nil {
                 panic(err)
         }
-        defer session.Close()
 
         session.SetMode(mgo.Monotonic, true)
 }
