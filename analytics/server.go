@@ -16,29 +16,20 @@ var mongoURI = os.Getenv("MONGOURI")
 
 var session *mgo.Session
 
+
 func main() {
+  img := []byte{71,73,70,56,57,97,1,0,1,0,128,0,0,255,255,255,0,0,0,33,249,4,0,0,0,0,0,44,0,0,0,0,1,0,1,0,0,2,2,68,1,0,59}
   log.Println("Starting")
+  gin.SetMode(gin.ReleaseMode) //prod
   r := gin.Default()
   setupMongo()
-
-  r.GET("/track", func(c *gin.Context) {
-  	
-	cookie, err := c.Request.Cookie("ecommtracker")
-	if err != nil {
-		cookie = &http.Cookie{
-			Name:  "ecommtracker",
-			Expires: time.Now().Add(10 * 365 * 24 * time.Hour),
-			Value: uuid.NewV4().String(),
-			Path:  "/",
-		} 
-  	http.SetCookie(c.Writer, cookie)
-	}
-	out := cookie.Value		
-    saveVisit(NewVisit(cookie.Value, c.Request))
-    c.JSON(200, gin.H{"sucess": out})
-  })
-  r.Run(":8000")
-}
+  r.GET("/track.gif", func(c *gin.Context) {
+  	  cookie := CheckOrSetCookie(c)
+      saveVisit(NewVisit(cookie.Value, c.Request))
+      c.Data(200, "image/gif" ,img)
+    })
+    r.Run(":8000")
+  }
 
 type Visit struct {
         ID bson.ObjectId `bson:"_id,omitempty"`
@@ -48,6 +39,20 @@ type Visit struct {
         Cookie string
         Referer string
         Query string
+}
+
+func CheckOrSetCookie(c *gin.Context) *http.Cookie {
+  cookie, err := c.Request.Cookie("ecommtracker")
+  if err != nil {
+    cookie = &http.Cookie{
+      Name:  "ecommtracker",
+      Expires: time.Now().Add(10 * 365 * 24 * time.Hour),
+      Value: uuid.NewV4().String(),
+      Path:  "/",
+    } 
+    http.SetCookie(c.Writer, cookie)
+  }
+  return cookie
 }
 
 func NewVisit(cookieValue string, r *http.Request) *Visit {
@@ -77,7 +82,7 @@ func setupMongo() {
         if err != nil {
                 panic(err)
         }
-        defer session.Close()
+        //defer session.Close()
 
-        session.SetMode(mgo.Monotonic, true)
+        //session.SetMode(mgo.Monotonic, true) //faster but unsafe
 }
