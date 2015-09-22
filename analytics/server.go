@@ -25,11 +25,15 @@ func main() {
   setupMongo()
   r.GET("/track.gif", func(c *gin.Context) {
       cookie := CheckOrSetCookie(c)
-      saveVisit(NewVisit(cookie.Value, c.Request))
+      c_cp := c.Copy()
       c.Data(200, "image/gif" ,img)
-    })
-    r.Run(":8000")
-  }
+      go func() {
+          visit := NewVisit(cookie.Value, c_cp.Request)
+          saveVisit(visit)
+      }()
+  })
+  r.Run(":8000")
+}
 
 type Visit struct {
         ID bson.ObjectId `bson:"_id,omitempty"`
