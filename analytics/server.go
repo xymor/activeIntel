@@ -24,7 +24,7 @@ func main() {
   r := gin.Default()
   setupMongo()
   r.GET("/track.gif", func(c *gin.Context) {
-  	  cookie := CheckOrSetCookie(c)
+      cookie := CheckOrSetCookie(c)
       saveVisit(NewVisit(cookie.Value, c.Request))
       c.Data(200, "image/gif" ,img)
     })
