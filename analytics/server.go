@@ -22,14 +22,25 @@ func main() {
   log.Println("Starting")
   gin.SetMode(gin.ReleaseMode) //prod
   r := gin.Default()
+  r.Use(static.Serve("/public"))
   setupMongo()
   r.GET("/track.gif", func(c *gin.Context) {
-      cookie := CheckOrSetCookie(c)
-      saveVisit(NewVisit(cookie.Value, c.Request))
-      c.Data(200, "image/gif" ,img)
-    })
-    r.Run(":8000")
+    cookie := CheckOrSetCookie(c)
+    saveVisit(NewVisit(cookie.Value, c.Request))
+    c.Data(200, "image/gif" ,img)
+  })
+  
+  var port string
+  if port = os.Getenv("VCAP_APP_PORT"); len(port) == 0 {
+    port = "8080"
   }
+
+  var host string
+  if host = os.Getenv("VCAP_APP_HOST"); len(host) == 0 {
+    host = ""
+  }
+  r.Run(host + ":" + port)
+}
 
 type Visit struct {
         ID bson.ObjectId `bson:"_id,omitempty"`
