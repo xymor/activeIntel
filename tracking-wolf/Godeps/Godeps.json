@@ -1,0 +1,8 @@
+{
+	"ImportPath": "_/Users/raphaelmiranda/projects/activeIntel/tracking-wolf",
+	"GoVersion": "go1.5",
+	"Packages": [
+		"_vendor/..."
+	],
+	"Deps": []
+}
