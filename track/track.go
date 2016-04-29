@@ -57,7 +57,7 @@ func CheckOrSetCookie(c *gin.Context) *http.Cookie {
   if err != nil {
     cookie = &http.Cookie{
       Name:  "ecommtracker",
-      Expires: time.Now().Add(10 * 365 * 24 * time.Hour),
+      Expires: time.Now().Add(10 * time.Year),
       Value: uuid.NewV4().String(),
       Path:  "/",
     } 
